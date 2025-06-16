@@ -3,12 +3,12 @@ from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 from logging import getLogger
 from kerykeion import (
-    AstrologicalSubject, 
-    KerykeionChartSVG, 
-    SynastryAspects, 
-    NatalAspects, 
-    RelationshipScoreFactory, 
-    CompositeSubjectFactory
+    AstrologicalSubject,
+    KerykeionChartSVG,
+    SynastryAspects,
+    NatalAspects,
+    RelationshipScoreFactory,
+    CompositeSubjectFactory, AstrologicalSubjectModel
 )
 from kerykeion.settings.config_constants import DEFAULT_ACTIVE_POINTS, DEFAULT_ACTIVE_ASPECTS
 
@@ -35,7 +35,7 @@ from ..types.response_models import (
     CompositeChartResponseModel,
     CompositeAspectsResponseModel,
     TransitAspectsResponseModel,
-    TransitChartResponseModel
+    TransitChartResponseModel, AstrologicalSubjectResponseModel, NatalAspectsResponseModel, BirthDataModel
 )
 
 logger = getLogger(__name__)
@@ -74,7 +74,7 @@ async def status(request: Request) -> JSONResponse:
     return JSONResponse(content=response_dict, status_code=200)
 
 
-@router.get("/api/v4/now", response_description="Current astrological data", response_model=BirthDataResponseModel)
+@router.get("/api/v4/now", response_description="Current astrological data", response_model=AstrologicalSubjectModel)
 async def get_now(request: Request) -> JSONResponse:
     """
     Retrieve astrological data for the current moment.
@@ -115,9 +115,8 @@ async def get_now(request: Request) -> JSONResponse:
             online=False,
         )
 
-        response_dict = {"status": "OK", "data": today_subject.model().model_dump()}
-
-        return JSONResponse(content=response_dict, status_code=200)
+        response_json = today_subject.model().model_dump()
+        return JSONResponse(content=response_json, status_code=200)
 
     except Exception as e:
         write_request_to_log(40, request, e)
@@ -610,7 +609,7 @@ async def synastry_aspects_data(aspects_request_content: SynastryAspectsRequestM
         return InternalServerErrorJsonResponse
 
 
-@router.post("/api/v4/natal-aspects-data", response_description="Birth aspects data", response_model=SynastryAspectsResponseModel)
+@router.post("/api/v4/natal-aspects-data", response_description="Birth aspects data", response_model=NatalAspectsResponseModel)
 async def natal_aspects_data(aspects_request_content: NatalAspectsRequestModel, request: Request) -> JSONResponse:
     """
     Retrieve natal aspects and data for a specific subject. Does not include the chart.
@@ -621,7 +620,7 @@ async def natal_aspects_data(aspects_request_content: NatalAspectsRequestModel, 
     subject = aspects_request_content.subject
 
     try:
-        first_astrological_subject = AstrologicalSubject(
+        astro_subject = AstrologicalSubject(
             name=subject.name,
             year=subject.year,
             month=subject.month,
@@ -642,18 +641,17 @@ async def natal_aspects_data(aspects_request_content: NatalAspectsRequestModel, 
         )
 
         aspects = NatalAspects(
-            first_astrological_subject,
+            astro_subject,
             active_points=aspects_request_content.active_points or DEFAULT_ACTIVE_POINTS,
             active_aspects=aspects_request_content.active_aspects or DEFAULT_ACTIVE_ASPECTS,
         ).relevant_aspects
 
         return JSONResponse(
-            content={
+            content= {
                 "status": "OK",
-                "data": {"subject": first_astrological_subject.model().model_dump()},
+                "data": astro_subject.model().model_dump(),
                 "aspects": [aspect.model_dump() for aspect in aspects],
-            },
-            status_code=200,
+            }
         )
 
     except Exception as e:

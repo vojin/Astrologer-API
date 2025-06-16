@@ -74,10 +74,10 @@ class BirthDataModel(BaseModel):
     chiron: PlanetModel = Field(description="The data of Chiron.")
 
     # Axial Cusps
-    asc: PlanetModel = Field(description="The data of the ascendant.")
-    dsc: PlanetModel = Field(description="The data of the descendant.")
-    mc: PlanetModel = Field(description="The data of the midheaven.")
-    ic: PlanetModel = Field(description="The data of the imum coeli.")
+    ascendant: PlanetModel = Field(description="The data of the ascendant.")
+    descendant: PlanetModel = Field(description="The data of the descendant.")
+    medium_coeli: PlanetModel = Field(description="The data of the midheaven.")
+    imum_coeli: PlanetModel = Field(description="The data of the imum coeli.")
     
     # Houses
     first_house: PlanetModel = Field(description="The data of the first house.")
@@ -101,13 +101,24 @@ class BirthDataModel(BaseModel):
     lunar_phase: Optional[LunarPhaseModel] = Field(description="The lunar phase of the subject.")
 
 
+class AstrologicalSubjectResponseModel(BaseModel):
+    status: str = Field(description="The status of the response.")
+    data: AstrologicalSubjectModel = Field(description="The data of the subject.")
+
 class BirthDataResponseModel(BaseModel):
     """
     The response model for the Birth Data endpoint.
     """
     status: str = Field(description="The status of the response.")
-    data: BirthDataModel = Field(description="The data of the subject.")
+    data: AstrologicalSubjectModel = Field(description="The data of the subject.")
 
+class NatalAspectsResponseModel(BaseModel):
+    """
+        The response model for the Birth Data endpoint.
+    """
+    status: str = Field(description="The status of the response.")
+    data: AstrologicalSubjectModel = Field(description="The data of the subject.")
+    aspects: list[AspectModel] = Field(description="A list with the aspects of the subject.")
 
 class BirthChartResponseModel(BaseModel):
     """

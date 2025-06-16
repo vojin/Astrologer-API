@@ -30,7 +30,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/BirthDataResponseModel"
+                  "$ref": "#/components/schemas/AstrologicalSubjectModel"
                 }
               }
             }
@@ -487,7 +487,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SynastryAspectsResponseModel"
+                  "$ref": "#/components/schemas/NatalAspectsResponseModel"
                 }
               }
             }
@@ -1697,19 +1697,19 @@
             "$ref": "#/components/schemas/PlanetModel",
             "description": "The data of Chiron."
           },
-          "asc": {
+          "ascendant": {
             "$ref": "#/components/schemas/PlanetModel",
             "description": "The data of the ascendant."
           },
-          "dsc": {
+          "descendant": {
             "$ref": "#/components/schemas/PlanetModel",
             "description": "The data of the descendant."
           },
-          "mc": {
+          "medium_coeli": {
             "$ref": "#/components/schemas/PlanetModel",
             "description": "The data of the midheaven."
           },
-          "ic": {
+          "imum_coeli": {
             "$ref": "#/components/schemas/PlanetModel",
             "description": "The data of the imum coeli."
           },
@@ -1809,10 +1809,10 @@
           "neptune",
           "pluto",
           "chiron",
-          "asc",
-          "dsc",
-          "mc",
-          "ic",
+          "ascendant",
+          "descendant",
+          "medium_coeli",
+          "imum_coeli",
           "first_house",
           "second_house",
           "third_house",
@@ -3661,6 +3661,35 @@
         "title": "SynastryAspectsRequestModel",
         "description": "The request model for the Aspects endpoint."
       },
+      "NatalAspectsResponseModel": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "The status of the response."
+          },
+          "data": {
+            "$ref": "#/components/schemas/AstrologicalSubjectModel",
+            "description": "The natal data model."
+          },
+          "aspects": {
+            "items": {
+              "$ref": "#/components/schemas/AspectModel"
+            },
+            "type": "array",
+            "title": "Aspects",
+            "description": "A list with the aspects for the subject."
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "data",
+          "aspects"
+        ],
+        "title": "NatalAspectsResponseModel",
+        "description": "The response model for the Natal Aspects endpoint."
+      },
       "SynastryAspectsResponseModel": {
         "properties": {
           "status": {
@@ -4450,6 +4479,9 @@
   "servers": [
     {
       "url": "https://astrologer.p.rapidapi.com/"
+    },
+    {
+      "url": "http://localhost:8000"
     }
   ]
 }
